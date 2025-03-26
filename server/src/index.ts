@@ -38,8 +38,7 @@ app.post('/api/extract-text', async (req, res) => {
     const title = removeSpecialCharacters($('.cover_title').text().trim());
     
     // 본문 추출 및 특수문자 제거
-    const content = removeSpecialCharacters($('.wrap_body').text().trim())
-      .slice(0, 500); // 500자로 제한
+    const content = removeSpecialCharacters($('.wrap_body').text().trim());
 
     if (!title || !content) {
       return res.status(400).json({ error: '텍스트를 추출할 수 없습니다.' });

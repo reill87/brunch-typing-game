@@ -5,6 +5,7 @@ import DifficultySelector from './DifficultySelector';
 import './TypingGame.css';
 
 const DEFAULT_TEXT = "안녕하세요. 이것은 타이핑 게임의 샘플 텍스트입니다. 타이핑을 시작해보세요!";
+const CHARS_PER_PAGE = 500;
 
 const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, difficulty = 'medium' }) => {
   const [gameState, setGameState] = useState<GameState>({
@@ -21,13 +22,30 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
     difficulty
   });
 
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pages, setPages] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
+    // 텍스트를 페이지로 분할
+    const textLines = text.split('\n');
+    const title = textLines[0];
+    const content = textLines.slice(2).join('\n');
+    
+    const contentPages = [];
+    for (let i = 0; i < content.length; i += CHARS_PER_PAGE) {
+      contentPages.push(content.slice(i, i + CHARS_PER_PAGE));
+    }
+    
+    setPages([title, ...contentPages]);
+    setCurrentPage(0);
+  }, [text]);
+
+  useEffect(() => {
     setGameState(prev => ({
       ...prev,
-      currentText: text,
+      currentText: pages[currentPage] || '',
       userInput: '',
       isCorrect: false,
       startTime: null,
@@ -39,11 +57,11 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
       timeElapsed: 0,
       difficulty
     }));
-  }, [text, difficulty]);
+  }, [currentPage, pages, difficulty]);
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     if (gameState.startTime && !gameState.isCorrect) {
@@ -115,11 +133,26 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
     }));
   };
 
-  useEffect(() => {
-    if (gameState.isCorrect && gameState.endTime && onComplete) {
-      onComplete(gameState.wpm);
+  const handlePageComplete = () => {
+    if (currentPage < pages.length - 1) {
+      setCurrentPage(prev => prev + 1);
+    } else {
+      // 모든 페이지 완료
+      if (onComplete) {
+        const totalWpm = Math.round(
+          (gameState.userInput.length / 5) / 
+          ((Date.now() - gameState.startTime!) / 60000)
+        );
+        onComplete(totalWpm);
+      }
     }
-  }, [gameState.isCorrect, gameState.endTime, gameState.wpm, onComplete]);
+  };
+
+  useEffect(() => {
+    if (gameState.isCorrect && gameState.endTime) {
+      handlePageComplete();
+    }
+  }, [gameState.isCorrect, gameState.endTime]);
 
   const renderTextComparison = () => {
     const { currentText, userInput } = gameState;
@@ -153,6 +186,11 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
         <div className="text-comparison">
           {renderTextComparison()}
         </div>
+        {pages.length > 1 && (
+          <div className="page-indicator">
+            {currentPage + 1} / {pages.length}
+          </div>
+        )}
       </div>
       <div className="input-area">
         <input
@@ -167,7 +205,7 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
           다시 시작
         </button>
       </div>
-      {gameState.isCorrect && (
+      {gameState.isCorrect && currentPage === pages.length - 1 && (
         <div className="result">
           <p>완료! WPM: {gameState.wpm}</p>
         </div>
