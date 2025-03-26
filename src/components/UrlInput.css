@@ -1,7 +1,11 @@
-.url-input-form {
+.url-input-wrapper {
   width: 100%;
   max-width: 600px;
   margin-bottom: 20px;
+}
+
+.url-input-form {
+  width: 100%;
 }
 
 .url-input-container {
@@ -50,4 +54,11 @@
   color: #f44336;
   margin-top: 10px;
   text-align: center;
+}
+
+.url-guide {
+  color: #888;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 10px;
 } 

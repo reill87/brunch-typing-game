@@ -39,22 +39,27 @@ const UrlInput: React.FC<UrlInputProps> = ({ onTextExtracted }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="url-input-form">
-      <div className="url-input-container">
-        <input
-          type="url"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="웹사이트 주소를 입력하세요"
-          required
-          disabled={isLoading}
-        />
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? '추출 중...' : '텍스트 추출'}
-        </button>
-      </div>
-      {error && <p className="error-message">{error}</p>}
-    </form>
+    <div className="url-input-wrapper">
+      <form onSubmit={handleSubmit} className="url-input-form">
+        <div className="url-input-container">
+          <input
+            type="url"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="브런치(brunch.co.kr) URL을 입력하세요"
+            required
+            disabled={isLoading}
+          />
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? '추출 중...' : '텍스트 추출'}
+          </button>
+        </div>
+        {error && <p className="error-message">{error}</p>}
+      </form>
+      <p className="url-guide">
+        브런치 사이트의 글 URL을 입력하면 제목과 본문을 자동으로 추출합니다.
+      </p>
+    </div>
   );
 };
 

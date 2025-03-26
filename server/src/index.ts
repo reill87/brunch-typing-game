@@ -17,24 +17,30 @@ app.post('/api/extract-text', async (req, res) => {
       return res.status(400).json({ error: 'URL이 필요합니다.' });
     }
 
+    // 브런치 URL인지 확인
+    if (!url.includes('brunch.co.kr')) {
+      return res.status(400).json({ error: '브런치 사이트의 URL만 지원합니다.' });
+    }
+
     const response = await axios.get(url);
     const html = response.data;
     const $ = cheerio.load(html);
 
-    // 불필요한 요소 제거
-    $('script').remove();
-    $('style').remove();
-    $('nav').remove();
-    $('header').remove();
-    $('footer').remove();
-    $('iframe').remove();
-    $('noscript').remove();
-
-    // 본문 텍스트 추출
-    const text = $('body').text()
+    // 제목 추출
+    const title = $('.cover_title').text().trim();
+    
+    // 본문 추출
+    const content = $('.wrap_body').text()
       .replace(/\s+/g, ' ')
       .trim()
       .slice(0, 500); // 500자로 제한
+
+    if (!title || !content) {
+      return res.status(400).json({ error: '텍스트를 추출할 수 없습니다.' });
+    }
+
+    // 제목과 본문을 결합
+    const text = `${title}\n\n${content}`;
 
     res.json({ text });
   } catch (error) {
