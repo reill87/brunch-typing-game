@@ -9,6 +9,14 @@ const port = 3001;
 app.use(cors());
 app.use(express.json());
 
+// 특수문자 제거 함수
+const removeSpecialCharacters = (text: string): string => {
+  return text
+    .replace(/[^\w\s가-힣ㄱ-ㅎㅏ-ㅣ]/g, '') // 한글, 영문, 숫자, 공백만 남기고 제거
+    .replace(/\s+/g, ' ') // 연속된 공백을 하나로
+    .trim();
+};
+
 app.post('/api/extract-text', async (req, res) => {
   try {
     const { url } = req.body;
@@ -26,13 +34,11 @@ app.post('/api/extract-text', async (req, res) => {
     const html = response.data;
     const $ = cheerio.load(html);
 
-    // 제목 추출
-    const title = $('.cover_title').text().trim();
+    // 제목 추출 및 특수문자 제거
+    const title = removeSpecialCharacters($('.cover_title').text().trim());
     
-    // 본문 추출
-    const content = $('.wrap_body').text()
-      .replace(/\s+/g, ' ')
-      .trim()
+    // 본문 추출 및 특수문자 제거
+    const content = removeSpecialCharacters($('.wrap_body').text().trim())
       .slice(0, 500); // 500자로 제한
 
     if (!title || !content) {
