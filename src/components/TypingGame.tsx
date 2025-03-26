@@ -69,13 +69,33 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT }) =>
     }
   }, [gameState.isCorrect, gameState.endTime, gameState.wpm, onComplete]);
 
+  const renderTextComparison = () => {
+    const { currentText, userInput } = gameState;
+    const maxLength = Math.max(currentText.length, userInput.length);
+    
+    return Array.from({ length: maxLength }, (_, i) => {
+      const targetChar = currentText[i] || '';
+      const inputChar = userInput[i] || '';
+      const isCorrect = targetChar === inputChar;
+      const isTyped = i < userInput.length;
+      
+      return (
+        <span
+          key={i}
+          className={`char ${isTyped ? (isCorrect ? 'correct' : 'incorrect') : ''} ${!isTyped && i < currentText.length ? 'remaining' : ''}`}
+        >
+          {isTyped ? inputChar : targetChar}
+        </span>
+      );
+    });
+  };
+
   return (
     <div className="typing-game">
       <div className="text-display">
-        <p className="target-text">{gameState.currentText}</p>
-        <p className={`user-input ${gameState.isCorrect ? 'correct' : ''}`}>
-          {gameState.userInput}
-        </p>
+        <div className="text-comparison">
+          {renderTextComparison()}
+        </div>
       </div>
       <div className="input-area">
         <input

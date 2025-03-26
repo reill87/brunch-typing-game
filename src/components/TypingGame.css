@@ -14,6 +14,33 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  min-height: 100px;
+}
+
+.text-comparison {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.char {
+  display: inline-block;
+  position: relative;
+  transition: all 0.1s ease;
+}
+
+.char.correct {
+  color: #4caf50;
+}
+
+.char.incorrect {
+  color: #f44336;
+  text-decoration: underline;
+}
+
+.char.remaining {
+  color: #666;
 }
 
 .target-text {
