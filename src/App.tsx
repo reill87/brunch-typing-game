@@ -1,7 +1,12 @@
 import React from 'react';
 import './App.css';
+import TypingGame from './components/TypingGame';
 
 function App() {
+  const handleGameComplete = (wpm: number) => {
+    console.log(`게임 완료! WPM: ${wpm}`);
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -9,7 +14,7 @@ function App() {
       </header>
       <main>
         <div className="game-container">
-          {/* 게임 컴포넌트들이 여기에 들어갈 예정입니다 */}
+          <TypingGame onComplete={handleGameComplete} />
         </div>
       </main>
     </div>
