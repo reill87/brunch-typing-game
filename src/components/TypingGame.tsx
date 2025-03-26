@@ -54,11 +54,12 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
       accuracy: 100,
       // startTime, currentWpm, timeElapsed는 유지
     }));
-  }, [currentPage, pages, difficulty]);
 
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, [currentPage]);
+    // 페이지 변경 시 입력창에 포커스 유지
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+  }, [currentPage, pages, difficulty]);
 
   // 타이머 업데이트
   useEffect(() => {
@@ -125,6 +126,13 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
       const errors = Array.from(input).filter((char, i) => char !== prev.currentText[i]).length;
       const accuracy = calculateAccuracy(input, prev.currentText);
 
+      // 현재 페이지의 텍스트와 입력이 정확히 일치할 때만 다음 페이지로 넘어가기
+      if (isCorrect && input.length === prev.currentText.length) {
+        setTimeout(() => {
+          handlePageComplete();
+        }, 100); // 약간의 지연을 주어 사용자가 완료를 인지할 수 있도록 함
+      }
+
       return {
         ...prev,
         userInput: input,
@@ -181,12 +189,6 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
       }
     }
   };
-
-  useEffect(() => {
-    if (gameState.isCorrect && gameState.endTime) {
-      handlePageComplete();
-    }
-  }, [gameState.isCorrect, gameState.endTime]);
 
   const renderTextComparison = () => {
     const { currentText, userInput } = gameState;
