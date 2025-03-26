@@ -9,4 +9,5 @@ export interface GameState {
 
 export interface GameProps {
   onComplete?: (wpm: number) => void;
+  text?: string;
 } 

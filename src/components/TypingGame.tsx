@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { GameState, GameProps } from '../types/game';
 import './TypingGame.css';
 
-const SAMPLE_TEXT = "안녕하세요. 이것은 타이핑 게임의 샘플 텍스트입니다. 타이핑을 시작해보세요!";
+const DEFAULT_TEXT = "안녕하세요. 이것은 타이핑 게임의 샘플 텍스트입니다. 타이핑을 시작해보세요!";
 
-const TypingGame: React.FC<GameProps> = ({ onComplete }) => {
+const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT }) => {
   const [gameState, setGameState] = useState<GameState>({
-    currentText: SAMPLE_TEXT,
+    currentText: text,
     userInput: '',
     isCorrect: false,
     startTime: null,
@@ -15,6 +15,18 @@ const TypingGame: React.FC<GameProps> = ({ onComplete }) => {
   });
 
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setGameState(prev => ({
+      ...prev,
+      currentText: text,
+      userInput: '',
+      isCorrect: false,
+      startTime: null,
+      endTime: null,
+      wpm: 0
+    }));
+  }, [text]);
 
   useEffect(() => {
     inputRef.current?.focus();

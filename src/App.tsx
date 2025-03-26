@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import TypingGame from './components/TypingGame';
+import UrlInput from './components/UrlInput';
 
 function App() {
+  const [gameText, setGameText] = useState<string>('');
+
   const handleGameComplete = (wpm: number) => {
     console.log(`게임 완료! WPM: ${wpm}`);
+  };
+
+  const handleTextExtracted = (text: string) => {
+    setGameText(text);
   };
 
   return (
@@ -14,7 +21,8 @@ function App() {
       </header>
       <main>
         <div className="game-container">
-          <TypingGame onComplete={handleGameComplete} />
+          <UrlInput onTextExtracted={handleTextExtracted} />
+          <TypingGame onComplete={handleGameComplete} text={gameText} />
         </div>
       </main>
     </div>
