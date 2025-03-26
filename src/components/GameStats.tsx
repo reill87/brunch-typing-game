@@ -20,7 +20,7 @@ const GameStats: React.FC<GameStatsProps> = ({ gameState }) => {
         <span className="stat-value">{formatTime(gameState.timeElapsed)}</span>
       </div>
       <div className="stat-item">
-        <span className="stat-label">WPM</span>
+        <span className="stat-label">현재 WPM</span>
         <span className="stat-value">{gameState.currentWpm}</span>
       </div>
       <div className="stat-item">

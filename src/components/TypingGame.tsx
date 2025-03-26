@@ -63,15 +63,29 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
     inputRef.current?.focus();
   }, [currentPage]);
 
+  // 타이머 업데이트
   useEffect(() => {
     if (gameState.startTime && !gameState.isCorrect) {
+      // 타이머 시작
       timerRef.current = setInterval(() => {
-        setGameState(prev => ({
-          ...prev,
-          timeElapsed: Math.floor((Date.now() - prev.startTime!) / 1000),
-          currentWpm: Math.round((prev.userInput.length / 5) / ((Date.now() - prev.startTime!) / 60000))
-        }));
+        setGameState(prev => {
+          const currentTime = Date.now();
+          const elapsedSeconds = Math.floor((currentTime - prev.startTime!) / 1000);
+          const currentWpm = Math.round((prev.userInput.length / 5) / (elapsedSeconds / 60));
+          
+          return {
+            ...prev,
+            timeElapsed: elapsedSeconds,
+            currentWpm
+          };
+        });
       }, 1000);
+    } else {
+      // 타이머 정지
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = undefined;
+      }
     }
 
     return () => {
@@ -90,6 +104,22 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
     setGameState(prev => {
+      // 첫 글자 입력 시 타이머 시작
+      if (prev.userInput.length === 0 && input.length === 1) {
+        return {
+          ...prev,
+          startTime: Date.now(),
+          userInput: input,
+          isCorrect: false,
+          endTime: null,
+          wpm: 0,
+          errors: 0,
+          accuracy: 100,
+          currentWpm: 0,
+          timeElapsed: 0
+        };
+      }
+
       const isCorrect = input === prev.currentText;
       const endTime = isCorrect ? Date.now() : null;
       const wpm = isCorrect && prev.startTime
@@ -111,9 +141,15 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
   };
 
   const handleStart = () => {
+    // 타이머 초기화
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = undefined;
+    }
+
     setGameState(prev => ({
       ...prev,
-      startTime: Date.now(),
+      startTime: Date.now(),  // 바로 현재 시간으로 설정
       userInput: '',
       isCorrect: false,
       endTime: null,
@@ -123,6 +159,7 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
       currentWpm: 0,
       timeElapsed: 0
     }));
+
     inputRef.current?.focus();
   };
 
@@ -201,7 +238,7 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
           placeholder="여기에 타이핑하세요..."
           disabled={gameState.isCorrect}
         />
-        <button onClick={handleStart} disabled={!gameState.isCorrect}>
+        <button onClick={handleStart}>
           다시 시작
         </button>
       </div>
