@@ -5,7 +5,7 @@ import DifficultySelector from './DifficultySelector';
 import './TypingGame.css';
 
 const DEFAULT_TEXT = "안녕하세요. 이것은 타이핑 게임의 샘플 텍스트입니다. 타이핑을 시작해보세요!";
-const CHARS_PER_PAGE = 500;
+const CHARS_PER_PAGE = 200;
 
 const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, difficulty = 'medium' }) => {
   const [gameState, setGameState] = useState<GameState>({
