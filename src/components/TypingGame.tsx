@@ -71,12 +71,12 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
         setGameState(prev => {
           const currentTime = Date.now();
           const elapsedSeconds = Math.floor((currentTime - prev.startTime!) / 1000);
-          const currentWpm = Math.round((prev.userInput.length / 5) / (elapsedSeconds / 60));
+          const currentCpm = Math.round((prev.userInput.length / (elapsedSeconds / 60)));
           
           return {
             ...prev,
             timeElapsed: elapsedSeconds,
-            currentWpm
+            currentWpm: currentCpm
           };
         });
       }, 1000);
@@ -123,7 +123,7 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
       const isCorrect = input === prev.currentText;
       const endTime = isCorrect ? Date.now() : null;
       const wpm = isCorrect && prev.startTime
-        ? Math.round((input.length / 5) / ((endTime! - prev.startTime) / 60000))
+        ? Math.round((input.length / ((endTime! - prev.startTime) / 60000)))
         : 0;
       const errors = Array.from(input).filter((char, i) => char !== prev.currentText[i]).length;
       const accuracy = calculateAccuracy(input, prev.currentText);
@@ -176,11 +176,11 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
     } else {
       // 모든 페이지 완료
       if (onComplete) {
-        const totalWpm = Math.round(
-          (gameState.userInput.length / 5) / 
-          ((Date.now() - gameState.startTime!) / 60000)
+        const totalCpm = Math.round(
+          (gameState.userInput.length / 
+          ((Date.now() - gameState.startTime!) / 60000))
         );
-        onComplete(totalWpm);
+        onComplete(totalCpm);
       }
     }
   };
@@ -244,7 +244,7 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
       </div>
       {gameState.isCorrect && currentPage === pages.length - 1 && (
         <div className="result">
-          <p>완료! WPM: {gameState.wpm}</p>
+          <p>완료! 분당 타자수: {gameState.wpm}</p>
         </div>
       )}
     </div>
