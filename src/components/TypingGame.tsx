@@ -48,14 +48,11 @@ const TypingGame: React.FC<GameProps> = ({ onComplete, text = DEFAULT_TEXT, diff
       currentText: pages[currentPage] || '',
       userInput: '',
       isCorrect: false,
-      startTime: null,
       endTime: null,
       wpm: 0,
       errors: 0,
       accuracy: 100,
-      currentWpm: 0,
-      timeElapsed: 0,
-      difficulty
+      // startTime, currentWpm, timeElapsed는 유지
     }));
   }, [currentPage, pages, difficulty]);
 
